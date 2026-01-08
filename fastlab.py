@@ -12,8 +12,8 @@ from pydantic import BaseModel
 from typing import List
 import hashlib
 class User(BaseModel):
-name: str
-age: int
+    name: str
+    age: int
 app = FastAPI()
 def sum_two_args(x,y):
     return x+y
