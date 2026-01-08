@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 pytest = "*"
+jinja2 = "*"
 
 [dev-packages]
 
