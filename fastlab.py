@@ -2,11 +2,18 @@ import fastapi.responses
 import imgio
 import numpy
 import io
-from PIL import Image
-from fastapi import FastAPI, Request
+from PIL import Image, ImageDraw
+from PIL.ImageDraw import ImageDraw
+from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from pydantic import BaseModel
+from typing import List
+import hashlib
+class User(BaseModel):
+name: str
+age: int
 app = FastAPI()
 def sum_two_args(x,y):
     return x+y
@@ -58,3 +65,50 @@ async def make_image(request: Request):
     im.save(f"./static/{image_n}")
 # передаем в шаблон две переменные, к которым сохранили url
     return templates.TemplateResponse("image.html", {"request": request, "im_st": image_st, "im_dyn": image_dyn})
+@app.post("/image_form", response_class=HTMLResponse)
+async def make_image(request: Request,
+                     name_op:str = Form(),
+                     number_op:int = Form(),
+                     r:int = Form(),
+                     g:int = Form(),
+                     b:int = Form(),
+                     files: List[UploadFile] = File(description="Multiple files as UploadFile")
+                     ):
+# устанавливаем готовность прорисовки файлов, можно здесь проверить, что файлы вообще есть
+# лучше использовать исключения
+ready = False
+print(len(files))
+if(len(files)>0):
+    if(len(files[0].filename)>0):
+    ready = True
+images = []
+if ready:
+    print([file.filename.encode('utf-8') for file in files])
+#  преобразуем имена файлов в хеш -строку
+    images = ["static/"+hashlib.sha256(file.filename.encode('utf-8')).hexdigest()
+    for file in files]
+# берем содержимое файлов
+    content = [await file.read() for file in files]
+# создаем объекты Image типа RGB размером 200 на 200
+    p_images = [Image.open(io.BytesIO(con)).convert("RGB").resize((200,200))
+    for con in content]
+# сохраняем изображения в папке static
+    for i in range(len(p_images)):
+        draw: ImageDraw = ImageDraw.Draw(p_images[i])
+# Рисуем красный эллипс с черной окантовкой
+        draw.ellipse((100, 100, 150, 200+number_op), fill=(r,g,b), outline=(0, 0, 0))
+        p_images[i].save("./"+images[i],'JPEG')
+# возвращаем html с параметрами-ссылками на изображения, которые позже будут
+# извлечены браузером запросами get по указанным ссылкам в img src
+    return templates.TemplateResponse("forms.html", {"request": request, "ready": ready, "images": images})
+@app.get("/image_form", response_class=HTMLResponse)
+async def make_image(request: Request):
+    return templates.TemplateResponse("forms.html", {"request": request})
+
+@app.get('/users/{user_id}')
+def get_user(user_id):
+    return User(name="John Doe", age=20)
+@app.put('/users/{user_id}')
+def update_user(user_id, user: User):
+# поместите сюда код для обновления данных
+    return user

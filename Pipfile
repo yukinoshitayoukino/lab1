@@ -12,6 +12,7 @@ jinja2 = "*"
 numpy = "*"
 Pillow = "*"
 imgio = "*"
+python-multipart = "*"
 
 [dev-packages]
 
