@@ -14,6 +14,7 @@ Pillow = "*"
 imgio = "*"
 python-multipart = "*"
 files = "*"
+ready = "*"
 
 [dev-packages]
 
