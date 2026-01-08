@@ -1,4 +1,5 @@
 import fastapi.responses
+import files
 import imgio
 import numpy
 import io
@@ -49,9 +50,7 @@ async def b_image(request: Request):
     im.save(imgio, 'JPEG')
     imgio.seek(0)
 # Возвращаем изображение в виде mime типа image/jpeg
-    return
-fastapi.responses.StreamingResponse(content=imgio, media_type="image/jpeg")
-
+    return fastapi.responses.StreamingResponse(content=imgio, media_type="image/jpeg")
 # возврат двух изображений в таблице html, одна ячейка ссылается на url bimage
 # другая ячейка указывает на файл из папки static по ссылке
 # при этом файл туда предварительно сохраняется после генерации из массива
@@ -79,8 +78,8 @@ async def make_image(request: Request,
 ready = False
 print(len(files))
 if(len(files)>0):
-    if(len(files[0].filename)>0):
-    ready = True
+    if len(files[0].filename)>0:
+        ready = True
 images = []
 if ready:
     print([file.filename.encode('utf-8') for file in files])

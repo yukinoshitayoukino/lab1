@@ -13,6 +13,7 @@ numpy = "*"
 Pillow = "*"
 imgio = "*"
 python-multipart = "*"
+files = "*"
 
 [dev-packages]
 
