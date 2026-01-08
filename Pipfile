@@ -9,6 +9,9 @@ uvicorn = "*"
 pydantic = "*"
 pytest = "*"
 jinja2 = "*"
+numpy = "*"
+Pillow = "*"
+imgio = "*"
 
 [dev-packages]
 
