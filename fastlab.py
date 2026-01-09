@@ -1,17 +1,15 @@
-import fastapi.responses
-import files
-import imgio
-import numpy
+import hashlib
 import io
-import ready
+from typing import List
+
+import fastapi.responses
+import numpy
 from PIL import Image, ImageDraw
 from fastapi import FastAPI, Request, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from typing import List
-import hashlib
 
 
 class User(BaseModel):
